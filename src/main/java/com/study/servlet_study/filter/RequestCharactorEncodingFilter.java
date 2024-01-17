@@ -22,7 +22,7 @@ public class RequestCharactorEncodingFilter extends HttpFilter implements Filter
        
     
     public RequestCharactorEncodingFilter() {
-        super();
+        super(); 
        
     }
 
