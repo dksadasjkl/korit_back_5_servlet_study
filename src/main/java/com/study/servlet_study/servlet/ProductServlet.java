@@ -32,6 +32,7 @@ public class ProductServlet extends HttpServlet {
 		int price = 0;
 		
 		try {
+			// Integer.parseInt() 문자열을 정수로 변환
 			price = Integer.parseInt(request.getParameter("price"));
 		} catch (NumberFormatException e) {
 			response.setStatus(400);
