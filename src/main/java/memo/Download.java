@@ -17,7 +17,6 @@ public class Download {
 	// 데이터베이스 생성 옵션
 	// log_bin - log_bin_trust_function_creators - 1
 	// 프리티어
-	// 1q2w3e!!
 	// 스토리지 자동 조정 -> 활성화 체크풀기
 	// 퍼블릭 액세스 -> 예
 	// db 파라미터 그룹 -> mysql
