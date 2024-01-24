@@ -17,96 +17,96 @@ public class BookSearchMain {
 	public static void main(String[] args) {
 		
 		/*
-		 * 검색할 도서명을 입력하세요 >>> 글
+		 * 검색할 도서명을 입력하세요 >>> 
 		 * 
 		 * 도서명 / 저자 / 출판사
 		 * 
 		 */
 		
 		Scanner scanner = new Scanner(System.in);
+		String searchValue = null;
+		
 		System.out.print("검색할 도서명을 입력하세요 >>> ");
-		String name = scanner.nextLine(); // like?
+		searchValue = scanner.nextLine(); 
+		
+		
+		List<Book> bookList = new ArrayList<>();
 		
 		DBConnectionMgr pool = DBConnectionMgr.getInstance(); 
-		Connection con = null;
+		Connection con = null; 
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		
-//		try {
-//			con = pool.getConnection();
-//			String authorSql = "select * from author_tb";
-//			pstmt = con.prepareStatement(authorSql);
-//			rs = pstmt.executeQuery();
-//					
-//			List<Author> authorList = new ArrayList<>();
-//			
-//			while(rs.next()) {
-//				authorList.add(Author.builder()
-//						.authorId(rs.getInt(1))
-//						.authorName(rs.getString(2))
-//						.build());
-//			}
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
-//		
-//		
-//		try {
-//			con = pool.getConnection();
-//			String publisherSql = "select * from publisher_tb";
-//			pstmt = con.prepareStatement(publisherSql);
-//			rs = pstmt.executeQuery();
-//			List<Publisher> authorList = new ArrayList<>();
-//			
-//			while(rs.next()) {
-//				authorList.add(Publisher.builder()
-//						.publisherId(rs.getInt(1))
-//						.publisherName(rs.getString(2))
-//						.build());
-//			}
-//					
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
-//		
 		try {
 			con = pool.getConnection();
 			String bookSql = "SELECT \r\n"
-					+ "	bt.book_name,\r\n"
+					+ "	bt.book_id,\r\n"
+					+ "    bt.book_name,\r\n"
+					+ "    bt.author_id,\r\n"
 					+ "    at.author_name,\r\n"
+					+ "    bt.publisher_id,\r\n"
 					+ "    pt.publisher_name\r\n"
-					+ "from\r\n"
+					+ "FROM \r\n"
 					+ "	book_tb bt\r\n"
-					+ "	left outer join author_tb at on (at.author_id = bt.author_id)\r\n"
-					+ "    left outer join publisher_tb pt on(pt.publisher_id = bt.publisher_id)";
-			pstmt = con.prepareStatement(bookSql);
+					+ "    left outer join author_tb at on(at.author_id = bt.author_id)\r\n"
+					+ "    left outer join publisher_tb pt on (pt.publisher_id = bt.publisher_id)\r\n"
+					+ "where\r\n"
+					+ "	bt.book_name like ?";
+			pstmt = con.prepareStatement(bookSql); // bookSql 객체생성
+			pstmt.setString(1, "%" + searchValue + "%"); // 작은 따옴표 포함해서 넣음
 			rs = pstmt.executeQuery();
-			List<Book> authorList = new ArrayList<>();
+			
 			
 			while(rs.next()) {
-				authorList.add(Book.builder()
-						.bookName(rs.getString(1))
-						.authorName(rs.getString(2))
-						.publisherName(rs.getString(3))
-						.build());
 				
-				authorList.forEach(book -> System.out.println(book));
-				while (rs.next()) {
-					System.out.println(rs.getString(1) + "   " + rs.getString(2) + "   " + rs.getString(3));
+//				bookList.add(Book.builder()
+//						.bookId(rs.getInt(1))
+//						.bookName(rs.getString(2))
+//						.author(Author.builder()
+//								.authorId(rs.getInt(3))
+//								.authorName(rs.getString(4))
+//								.build())
+//						.publisher(Publisher.builder()
+//								.publisherId(rs.getInt(5))
+//								.publisherName(rs.getString(6))
+//								.build())											
+//						.build());
+
+			
+				Author author = Author
+								.builder()
+								.authorId(rs.getInt(3))
+								.authorName(rs.getString(4))
+								.build();
+				Publisher publisher = Publisher
+									.builder()
+									.publisherId(rs.getInt(5))
+									.publisherName(rs.getString(6))
+									.build();
+				Book book = Book
+						.builder()
+						.bookId(rs.getInt(1))
+						.bookName(rs.getString(2))
+						.author(author)
+						.publisher(publisher)
+						.build();
 				
-				}
-				
+				bookList.add(book);
+		
 			}
-					
+
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}  finally { 
 			pool.freeConnection(con, pstmt, rs);
 		}
 		
-		
-		
-		
+		System.out.println("도서명 / 저자명/ 출판사");
+		for (Book book : bookList) {
+			System.out.println(book.getBookName() + " / " + book.getAuthor().getAuthorName() + " / " + book.getPublisher().getPublisherName());
+		}
+				
 	}
 
 }

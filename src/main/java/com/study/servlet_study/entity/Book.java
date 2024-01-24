@@ -6,7 +6,8 @@ import lombok.Data;
 @Builder
 @Data
 public class Book {
+	private int	bookId;
 	private String bookName;
-	private String authorName;
-	private String publisherName;
+	private Author author;
+	private Publisher publisher;
 }
